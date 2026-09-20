@@ -118,7 +118,7 @@ function AfterHours() {
             contentContainerStyle={{
               paddingHorizontal: mobileNav ? 20 : width > 1350 ? 48 : 32,
               paddingTop: mobileNav ? 8 : 28,
-              paddingBottom: 35,
+              paddingBottom: mobileNav ? 96 : 35,
               width: '100%',
               maxWidth: 1280,
               alignSelf: 'center',
