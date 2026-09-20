@@ -23,7 +23,7 @@ type Dialog =
 
 export default function App() {
   return (
-    <SafeAreaProvider>
+    <SafeAreaProvider style={{ flex: 1, height: '100%' }}>
       <AfterHours />
     </SafeAreaProvider>
   );
@@ -93,8 +93,8 @@ function AfterHours() {
   const today = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
   return (
-    <SafeAreaView edges={mobileNav ? ['top', 'bottom'] : []} style={{ flex: 1, backgroundColor: colors.bg }}>
-      <View style={{ flex: 1, flexDirection: 'row' }}>
+    <SafeAreaView edges={mobileNav ? ['top', 'bottom'] : []} style={{ flex: 1, height: '100%', backgroundColor: colors.bg }}>
+      <View style={{ flex: 1, flexDirection: 'row', height: '100%', minHeight: 0 }}>
         {/* Desktop Sidebar */}
         {!mobileNav && (
           <Sidebar
@@ -109,12 +109,13 @@ function AfterHours() {
         )}
 
         {/* Main Content Area */}
-        <View style={{ flex: 1, minWidth: 0 }}>
+        <View style={{ flex: 1, minWidth: 0, height: '100%' }}>
           <ScrollView
             ref={scroll}
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="on-drag"
             showsVerticalScrollIndicator={false}
+            style={{ flex: 1, height: '100%' }}
             contentContainerStyle={{
               paddingHorizontal: mobileNav ? 20 : width > 1350 ? 48 : 32,
               paddingTop: mobileNav ? 8 : 28,
