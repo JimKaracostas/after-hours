@@ -1,0 +1,1 @@
+Original synthesized ambient loops generated for After Hours. Mono PCM WAV, 22.05 kHz, 12 seconds. No third-party recordings. Used offline by Expo Audio on Android and iOS. Playback is foreground only.
