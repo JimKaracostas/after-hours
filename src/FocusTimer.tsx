@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AppState, Pressable, Text, TextInput, View } from 'react-native';
-import { Check, CloudRain, Flame, Pause, Play, Radio, RotateCcw, Volume2, VolumeX, Wind, X } from 'lucide-react-native';
+import { Check, Pause, Play, RotateCcw } from 'lucide-react-native';
 import { Book } from './model';
 import { Body, Button, colors, fonts, Heading, Label, Sheet } from './ui';
-import { SoundMode, SOUND_OPTIONS, useAmbientAudio } from './ambientAudio';
+import { SOUND_OPTIONS, useAmbientAudio } from './ambientAudio';
 
 export interface FocusTimerProps {
   book?: Book;
@@ -28,7 +28,7 @@ export function FocusTimer({ book, onClose, onLogProgress }: FocusTimerProps) {
   const [endingPage, setEndingPage] = useState(book ? String(book.currentPage) : '');
   const [error, setError] = useState('');
 
-  const { mode: currentSound, setMode: setSoundMode, volume, setVolume } = useAmbientAudio();
+  const { mode: currentSound, setMode: setSoundMode } = useAmbientAudio();
 
   const elapsedRef = useRef(0);
   const [clockEpoch, setClockEpoch] = useState(0);

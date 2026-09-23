@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pressable, View } from 'react-native';
 import { Check } from 'lucide-react-native';
 import { Task } from '../../model';

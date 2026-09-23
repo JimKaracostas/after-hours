@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { Flame, Sparkles } from 'lucide-react-native';
 import { Card, colors, fonts, Heading, Label } from './ui';

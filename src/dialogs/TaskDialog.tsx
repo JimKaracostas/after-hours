@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View } from 'react-native';
 import { Check, Plus, Trash2 } from 'lucide-react-native';
 import { Task } from '../model';

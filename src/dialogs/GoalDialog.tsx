@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Share, Platform, TextInput, View } from 'react-native';
 import { Check, Download, Upload } from 'lucide-react-native';
 import { AppState, isAppState } from '../model';

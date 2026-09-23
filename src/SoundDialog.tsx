@@ -1,7 +1,6 @@
-import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { CloudRain, Flame, Radio, Volume2, VolumeX, Wind } from 'lucide-react-native';
-import { Body, Button, colors, fonts, Heading, Label, Sheet } from './ui';
+import { Body, Button, colors, fonts, Label, Sheet } from './ui';
 import { SoundMode, SOUND_OPTIONS, useAmbientAudio } from './ambientAudio';
 
 export function SoundDialog({ onClose }: { onClose: () => void }) {

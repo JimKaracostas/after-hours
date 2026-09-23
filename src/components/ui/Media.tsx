@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Image, ImageSourcePropType, View } from 'react-native';
 import { BookOpen } from 'lucide-react-native';
 import { colors, fonts } from '../../theme/tokens';
@@ -16,11 +16,13 @@ export function Cover({ book, width = 92 }: { book: Book; width?: number }) {
   const source = book.cover ? { uri: book.cover } : coverAssets[book.id];
   useEffect(() => setFailed(false), [book.cover, book.id]);
 
+  const height = Math.round(width * 1.5);
+
   return (
     <View
       style={{
         width,
-        height: width * 1.5,
+        height,
         borderRadius: 3,
         overflow: 'hidden',
         backgroundColor: book.color || colors.raised,
@@ -32,7 +34,12 @@ export function Cover({ book, width = 92 }: { book: Book; width?: number }) {
           source={source}
           resizeMode="cover"
           onError={() => setFailed(true)}
-          style={{ width: '100%', height: '100%' }}
+          style={{
+            width: '100%',
+            height: '100%',
+            // @ts-ignore - web high-contrast crisp interpolation
+            imageRendering: '-webkit-optimize-contrast',
+          }}
         />
       ) : (
         <View className="flex-1 items-center justify-center px-3 gap-3">

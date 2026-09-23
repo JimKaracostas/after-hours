@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, TextInput, View } from 'react-native';
 import { Check, Plus, Quote, Search, X } from 'lucide-react-native';
 import { Book } from '../model';

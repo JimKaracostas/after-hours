@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pressable, Text, TextInput, TextInputProps, View } from 'react-native';
 import { colors, fonts } from '../../theme/tokens';
 import { Body } from './Typography';

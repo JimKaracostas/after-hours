@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, View } from 'react-native';
 import { ArrowRight, Pencil, Search } from 'lucide-react-native';
 import { CatalogBook, searchBooks } from './catalog';

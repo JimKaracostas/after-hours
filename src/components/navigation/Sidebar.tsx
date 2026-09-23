@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { Moon, Settings2, Volume2 } from 'lucide-react-native';
 import { Tab } from '../../screens/types';

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { ArrowUpRight, BookOpen, ChevronRight, Flame, Plus, Play } from 'lucide-react-native';
 import { selectStats } from '../model';

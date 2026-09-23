@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pressable, Text } from 'react-native';
 import { LucideIcon } from 'lucide-react-native';
 import { colors, fonts } from '../../theme/tokens';
