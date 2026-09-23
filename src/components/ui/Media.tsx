@@ -11,10 +11,63 @@ export function registerCovers(covers: Record<string, ImageSourcePropType>) {
   coverAssets = covers;
 }
 
+const knownThumbnailUpgrades: Record<string, string> = {
+  // Family of Liars default work cover 12728811 is 70x106; edition cover 13314081 is 327x500
+  '12728811': '13314081',
+};
+
+function normalizeCoverUrl(url: string | undefined): string | undefined {
+  if (!url) return undefined;
+  for (const [lowResId, highResId] of Object.entries(knownThumbnailUpgrades)) {
+    if (url.includes(`/id/${lowResId}-`)) {
+      return url.replace(`/id/${lowResId}-`, `/id/${highResId}-`);
+    }
+  }
+  return url;
+}
+
 export function Cover({ book, width = 92 }: { book: Book; width?: number }) {
   const [failed, setFailed] = useState(false);
-  const source = book.cover ? { uri: book.cover } : coverAssets[book.id];
-  useEffect(() => setFailed(false), [book.cover, book.id]);
+  const normalizedInitial = normalizeCoverUrl(book.cover);
+  const [activeCover, setActiveCover] = useState(normalizedInitial);
+  const source = activeCover ? { uri: activeCover } : coverAssets[book.id];
+
+  useEffect(() => {
+    setFailed(false);
+    const normalized = normalizeCoverUrl(book.cover);
+    setActiveCover(normalized);
+
+    // If an image URL is from Open Library, check if it's a tiny low-res scan and upgrade to full resolution
+    if (normalized && normalized.startsWith('http') && normalized.includes('covers.openlibrary.org')) {
+      Image.getSize(
+        normalized,
+        (w, h) => {
+          if (w < 150 || h < 250) {
+            const query = encodeURIComponent(`${book.title} ${book.author || ''}`.trim());
+            fetch(`https://openlibrary.org/search.json?q=${query}&limit=1&fields=key,cover_i,cover_height,cover_width`)
+              .then(r => r.json())
+              .then(async data => {
+                const doc = data?.docs?.[0];
+                if (!doc?.key) return;
+                const edRes = await fetch(`https://openlibrary.org${doc.key}/editions.json?limit=8`);
+                if (edRes.ok) {
+                  const edData = await edRes.json();
+                  for (const entry of (edData.entries || [])) {
+                    const coverId = (entry.covers || []).find((c: number) => c > 0);
+                    if (coverId && !normalized.includes(String(coverId))) {
+                      setActiveCover(`https://covers.openlibrary.org/b/id/${coverId}-L.jpg?default=false`);
+                      return;
+                    }
+                  }
+                }
+              })
+              .catch(() => {});
+          }
+        },
+        () => {}
+      );
+    }
+  }, [book.cover, book.id, book.title, book.author]);
 
   const height = Math.round(width * 1.5);
 
