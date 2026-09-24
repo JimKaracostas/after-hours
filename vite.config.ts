@@ -12,6 +12,16 @@ export default defineConfig({
     ],
     extensions,
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // Keep the stable React runtime cacheable across app-only updates.
+        manualChunks(id) {
+          if (/node_modules\/(react|react-dom|scheduler)\//.test(id.replaceAll('\\', '/'))) return 'react-runtime';
+        },
+      },
+    },
+  },
   optimizeDeps: {
     esbuildOptions: {
       resolveExtensions: extensions,

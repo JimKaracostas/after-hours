@@ -28,15 +28,22 @@ export function GoalDialog({
   function handleExport() {
     if (!state) return;
     const json = JSON.stringify(state, null, 2);
-    if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.clipboard) {
-      navigator.clipboard
-        .writeText(json)
-        .then(() => {
-          setInfoMessage('Library backup copied to clipboard as JSON!');
-        })
-        .catch(() => {
-          setError('Could not copy your backup. Please allow clipboard access and try again.');
-        });
+    setError('');
+    setInfoMessage('');
+    if (Platform.OS === 'web') {
+      try {
+        const url = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `after-hours-backup-${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        setInfoMessage('Backup download started. Keep the file somewhere safe.');
+      } catch {
+        setError('Could not download your backup. Please try again.');
+      }
     } else {
       Share.share({ message: json, title: 'After Hours backup' }).catch(() => {
         setError('Could not share your backup. Please try again.');
@@ -102,8 +109,8 @@ export function GoalDialog({
       <View style={{ borderTopWidth: 1, borderColor: colors.line, paddingTop: 18, gap: 10 }}>
         <Label>DATA & BACKUPS</Label>
         <View className="flex-row flex-wrap gap-2">
-          <Button title="Export JSON" secondary icon={Download} small onPress={handleExport} />
-          <Button title="Import JSON" secondary icon={Upload} small onPress={() => setShowImport(!showImport)} />
+          <Button title="Download backup" secondary icon={Download} small onPress={handleExport} />
+          <Button title="Restore backup" secondary icon={Upload} small onPress={() => setShowImport(!showImport)} />
         </View>
 
         {showImport && (
@@ -119,6 +126,7 @@ export function GoalDialog({
           >
             <Body style={{ fontSize: 11 }}>Paste your backup. Restoring replaces your current library:</Body>
             <TextInput
+              accessibilityLabel="Backup JSON"
               multiline
               value={importJson}
               onChangeText={setImportJson}

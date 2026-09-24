@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useDeferredValue, useMemo, useState } from 'react';
 import { Pressable, TextInput, View } from 'react-native';
 import { Check, Plus, Quote, Search, X } from 'lucide-react-native';
 import { Book } from '../model';
@@ -8,6 +8,8 @@ import { ScreenProps, statusLabels } from './types';
 
 export function BooksScreen({ state, compact, onBook }: ScreenProps) {
   const [query, setQuery] = useState('');
+  const deferredQuery = useDeferredValue(query);
+  const [sort, setSort] = useState<'added' | 'title' | 'progress'>('added');
   const [filter, setFilter] = useState<'all' | Book['status']>('all');
   const [selectedGenre, setSelectedGenre] = useState<string>('all');
 
@@ -21,15 +23,21 @@ export function BooksScreen({ state, compact, onBook }: ScreenProps) {
   }, [state.books]);
 
   const books = useMemo(() => {
-    return state.books.filter(book => {
+    const search = deferredQuery.trim().toLocaleLowerCase();
+    const filtered = state.books.filter(book => {
       const matchStatus = filter === 'all' || book.status === filter;
       const matchGenre = selectedGenre === 'all' || book.genre === selectedGenre;
       const matchSearch = `${book.title} ${book.author} ${book.genre ?? ''}`
         .toLocaleLowerCase()
-        .includes(query.trim().toLocaleLowerCase());
+        .includes(search);
       return matchStatus && matchGenre && matchSearch;
     });
-  }, [state.books, filter, selectedGenre, query]);
+    if (sort === 'title') filtered.sort((a, b) => a.title.localeCompare(b.title));
+    if (sort === 'progress') filtered.sort((a, b) => (b.currentPage / b.totalPages) - (a.currentPage / a.totalPages));
+    return filtered;
+  }, [state.books, filter, selectedGenre, deferredQuery, sort]);
+
+  const hasFilters = Boolean(query.trim()) || filter !== 'all' || selectedGenre !== 'all';
 
   return (
     <View>
@@ -88,6 +96,14 @@ export function BooksScreen({ state, compact, onBook }: ScreenProps) {
         </View>
       )}
 
+      <View style={{ marginTop: 20, gap: 10 }}>
+        <Body muted style={{ fontSize: 12 }}>{books.length} of {state.books.length} books · Sort by</Body>
+        <Chips value={sort} onChange={setSort} options={[
+          { value: 'added', label: 'Added' },
+          { value: 'title', label: 'Title' },
+          { value: 'progress', label: 'Progress' },
+        ]} />
+      </View>
       </>}
       {/* Book Grid */}
       <View style={{ marginTop: 32, flexDirection: 'row', flexWrap: 'wrap', gap: compact ? '4%' : '3%' }}>
@@ -157,13 +173,13 @@ export function BooksScreen({ state, compact, onBook }: ScreenProps) {
 
       {!books.length && (
         <Empty
-          title={query ? 'No books found' : 'A little room on the shelf'}
+          title={hasFilters ? 'No matching books' : 'A little room on the shelf'}
           description={
-            query
-              ? 'Try a different title or author, or add this book to your collection.'
+            hasFilters
+              ? 'Try another search or clear your filters to see the rest of your shelf.'
               : 'Add a book and make a little time for the next chapter.'
           }
-          action={<Button title="Add a book" icon={Plus} onPress={() => onBook()} />}
+          action={hasFilters ? <Button title="Clear filters" secondary onPress={() => { setQuery(''); setFilter('all'); setSelectedGenre('all'); }} /> : <Button title="Add a book" icon={Plus} onPress={() => onBook()} />}
         />
       )}
     </View>

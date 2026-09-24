@@ -1,16 +1,21 @@
-import { useEffect, useRef, useState } from 'react';
+import { lazy, useEffect, useRef, useState } from 'react';
 import { AppState as NativeAppState, ScrollView, useWindowDimensions, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Book, Task } from './src/model';
 import { useStore } from './src/useStore';
-import { BookDialog, GoalDialog, TaskDialog } from './src/dialogs';
 import { BooksScreen, HomeScreen, ScreenProps, Tab, TasksScreen } from './src/screens';
 import { Body, Button, colors, Loading, Sheet } from './src/ui';
-import { SoundDialog } from './src/SoundDialog';
-import { FocusTimer } from './src/FocusTimer';
 import { useAmbientAudio } from './src/ambientAudio';
 import { MobileHome } from './src/screens/MobileHome';
 import { MobileNav, Sidebar, TopBar } from './src/components/navigation';
+
+import { DeferredDialog } from './src/components/DeferredDialog';
+
+const BookDialog = lazy(() => import('./src/dialogs/BookDialog').then(module => ({ default: module.BookDialog })));
+const GoalDialog = lazy(() => import('./src/dialogs/GoalDialog').then(module => ({ default: module.GoalDialog })));
+const TaskDialog = lazy(() => import('./src/dialogs/TaskDialog').then(module => ({ default: module.TaskDialog })));
+const SoundDialog = lazy(() => import('./src/SoundDialog').then(module => ({ default: module.SoundDialog })));
+const FocusTimer = lazy(() => import('./src/FocusTimer').then(module => ({ default: module.FocusTimer })));
 
 type Dialog =
   | { kind: 'book'; book?: Book }
@@ -172,6 +177,7 @@ function AfterHours() {
       {mobileNav && <MobileNav currentTab={tab} onNavigate={navigate} />}
 
       {/* Dialogs & Modals */}
+      {dialog && <DeferredDialog key={dialog.kind} onClose={() => setDialog(null)}>
       {dialog?.kind === 'book' && <BookDialog book={dialog.book} dispatch={store.dispatch} onClose={() => setDialog(null)} />}
       {dialog?.kind === 'task' && <TaskDialog task={dialog.task} dispatch={store.dispatch} onClose={() => setDialog(null)} />}
       {dialog?.kind === 'goal' && (
@@ -202,6 +208,7 @@ function AfterHours() {
           <Button title="Keep my data" secondary onPress={() => setDialog(null)} />
         </Sheet>
       )}
+      </DeferredDialog>}
     </SafeAreaView>
   );
 }
